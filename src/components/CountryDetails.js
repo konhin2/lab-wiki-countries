@@ -7,7 +7,8 @@ import {
 
 export default function CountryDetails(props) {
     const { country } = useParams()
-    const [data, setData] = useState({})
+    const [data, setData] = useState()
+    const [borders, setBorders] = useState()
     // console.log(props.match.params.currency)
     useEffect(() => {
         const getCurrencies = async () => {
@@ -19,13 +20,19 @@ export default function CountryDetails(props) {
             setData(
                 getData
             )
-            console.log(getData)
+            setBorders(
+                getData.borders.map((eachBorder) => {
+                    return dataFromAPI.find((eachCountry) => {
+                        return eachCountry.cca3=== eachBorder
+                    })
+                })
+            )
         }
         getCurrencies()
     }, [country])
     return (
         <div className="col-7">
-            <h1>{data.name.common}</h1>
+            <h1>{data ? data.name.common : "Not Data Yet"}</h1>
             <table className="table">
                 <thead></thead>
                 <tbody>
@@ -33,30 +40,33 @@ export default function CountryDetails(props) {
                         <td style={{width: "30%"}}>Capital</td>
                         <td>
                             {
-                                data.capital.map((e) => {
+                                data ? data.capital.map((e) => {
                                     return e
                                 })
+                                : "Not Data Yet"
                             }
+                            
                         </td>
                     </tr>
                     <tr>
                         <td>Area</td>
-                        <td>{data.area} km<sup>2</sup></td>
+                        <td>{data ? data.area : "Not Data yet"} km<sup>2</sup></td>
                     </tr>
                     <tr>
                         <td>Borders</td>
                         <td>
                             <ul>
                                 {
-                                    data.borders.map((element) => {
+                                    borders ? borders.map((element) => {
                                         return (
                                             <li>
-                                                <Link to={`/${element}`}>
-                                                    {element}
+                                                <Link to={`/${element.cca3}`}>
+                                                    {element.name.common}
                                                 </Link>
                                             </li>
                                         )
                                     })
+                                    : "Not Data Yet"
                                 }
                             </ul>
                         </td>
